@@ -9,10 +9,10 @@ type gpath = (flow * id) list
 (* Finds a path from source to sink in the graph if it is possible *)
 let findAugmentingPath myGraph sourceid sinkid = 	
 
-	let rec findAugmentingPath2 sourceid precedingPath =
+	let rec findAugmentingPath2 sourceid2 precedingPath =
 	
 		(*We gather the vertex from the IDs*)
-		let source = find_vertex myGraph sourceid in
+		let source = find_vertex myGraph sourceid2 in
 		let sink = find_vertex myGraph sinkid in
 
 		(*Condidtion used to filter the list of edges : not already in the path*)
@@ -21,7 +21,8 @@ let findAugmentingPath myGraph sourceid sinkid =
 			(*(because otherwise it would fail once the value of an edge has been changed)*)
 			(*(we use the fact that every vertex can be in the path only once *)
 			let b = List.map (fun (a,b) -> b) precedingPath in 
-			(not (List.mem (snd x) b)) in
+			( (not (List.mem (snd x) b)) && (not ((snd x)=sourceid)) ) 
+		in
 
 		(*Function to test all arcs that are proven to be correct*)
 		let rec tester_tous_les_arcs arcs =
@@ -92,14 +93,18 @@ let getFlowFromPath augmentingPath=
 					(* We modify the outgoing edge (only if it should still exist)*)
 					(if ((label-(getFlowFromPath augmentingPath))>0) 
 						then add_edge outgraph id id_arrivee (label-(getFlowFromPath augmentingPath)) else () );
-												(* We modify the incoming edge*)
+						
+					(* We modify the incoming edge*)
 					let incomingLabelOption = (find_edge myGraph id_arrivee id) in
 					let incomingLabel =
 						match incomingLabelOption with
 							| None -> 0
 							| Some a -> a
-						in					
-						add_edge outgraph id_arrivee id (incomingLabel+(getFlowFromPath augmentingPath));				
+						in	
+						(* The algorithm explained here : https://brilliant.org/wiki/ford-fulkerson-algorithm/*)
+						(* says to add a new vertex in the other way, but the tests we did show *)
+						(* that doing that produces unexpected results, do we do not do it*)				
+						(); (*add_edge outgraph id_arrivee id (incomingLabel+(getFlowFromPath augmentingPath));	*)			
 					end
 					else (add_edge outgraph id id_arrivee label) end;
 					add_edges id rest

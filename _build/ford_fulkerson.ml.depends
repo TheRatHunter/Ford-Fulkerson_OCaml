@@ -1,1 +1,1 @@
-ford_fulkerson.ml: Graph List
+ford_fulkerson.ml: Graph List String
