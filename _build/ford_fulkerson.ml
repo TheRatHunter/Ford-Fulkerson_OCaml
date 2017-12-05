@@ -93,14 +93,21 @@ let getFlowFromPath augmentingPath=
 					(* We modify the outgoing edge (only if it should still exist)*)
 					(if ((label-(getFlowFromPath augmentingPath))>0) 
 						then add_edge outgraph id id_arrivee (label-(getFlowFromPath augmentingPath)) else () );
-												(* We modify the incoming edge*)
-					let incomingLabelOption = (find_edge myGraph id_arrivee id) in
+						
+					(* The algorithm explained here : https://brilliant.org/wiki/ford-fulkerson-algorithm/*)
+					(* says to add a new vertex in the other way, but the tests we did show *)
+					(* that doing that produces unexpected results, do we do not do it*)
+							
+					(* We modify the incoming edge*)
+					(*let incomingLabelOption = (find_edge myGraph id_arrivee id) in
 					let incomingLabel =
 						match incomingLabelOption with
 							| None -> 0
 							| Some a -> a
-						in					
-						(); (*add_edge outgraph id_arrivee id (incomingLabel+(getFlowFromPath augmentingPath));	*)			
+						in
+						add_edge outgraph id_arrivee id (incomingLabel+(getFlowFromPath augmentingPath));	*)	
+										
+						(); 			
 					end
 					else (add_edge outgraph id id_arrivee label) end;
 					add_edges id rest
